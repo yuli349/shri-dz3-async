@@ -1,0 +1,88 @@
+Реализовать сложение векторов (размерность векторов может быть больше 2).
+<br>
+Посмотрите код страницы и вывод в консоль браузера.
+
+<script src="shri-async-hw.js"></script>
+
+<script>
+    const {
+        AsyncArray,
+        add,
+        less,
+        equal
+    } = Homework
+
+    const arr = new AsyncArray([1, 2, 3]);
+    const arr2 = new AsyncArray([1, 5, 8]);
+
+    let getLength = () => {
+        return new Promise((resolve) => {
+            arr.length((result) => {resolve(result)});
+        })
+    }
+
+    let getLengthSecond = () => {
+        return new Promise((resolve) => {
+            arr2.length((result) => {resolve(result)});
+        })
+    }
+
+    let getValueFirst = (index) => {
+        return new Promise((resolve) => {
+            arr.get(index, (result) => {resolve(result)});
+        })
+    }
+
+    let getValueSecond = (index) => {
+        return new Promise((resolve) => {
+            arr2.get(index, (result) => {resolve(result)});
+        })
+    }
+
+    let asyncArrAdd = (v1, v2) => {
+        return new Promise((resolve) => {
+            add(v1, v2, (result) => {resolve(result)});
+        })
+    }
+
+    let asyncArrEqual = (length1, length2) => {
+        return new Promise((resolve) => {
+            equal(length1, length2, (result) => {resolve(result)});
+        })
+    }
+
+    let asyncArrLess = (index, length) => {
+        return new Promise((resolve) => {
+            less(index, length, (result) => {resolve(result)});
+        })
+    }
+
+    async function summVectors(arr, arr2, cb) {
+        const length = await getLength();
+        const lengthSecond = await getLengthSecond();
+        let index = 0;
+        let isLess = await asyncArrLess(index, length);
+        const diffInLength = await asyncArrEqual(length, lengthSecond);
+        const arr3 = [];
+
+        if (!diffInLength) {
+            console.log('Векторы разной размерности нельзя складывать');
+        }
+        else {
+            for (index; index < length; index = await asyncArrAdd(index, 1)) {
+                let arrVal1 = await getValueFirst(index);
+                let arrVal2 = await getValueSecond(index);
+
+                arr3[index] = await asyncArrAdd(arrVal1, arrVal2);
+                isLess = asyncArrLess(index, length);
+            }
+
+            console.log('Сумма векторов:');
+            console.log(arr3);
+        }
+
+        cb(arr3);
+    }
+
+    summVectors(arr, arr2, () => {});
+</script>
